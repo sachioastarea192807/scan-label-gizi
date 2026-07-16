@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Detail Riwayat | Scan Label Gizi{% endblock %}
+
+{% block content %}
+
+{% set n = item.nutrition_result %}
+
+{% set fields = [
+    ("Energi", n.energi if n else 0, "kkal"),
+    ("Protein", n.protein if n else 0, "g"),
+    ("Lemak Total", n.lemak_total if n else 0, "g"),
+    ("Lemak Jenuh", n.lemak_jenuh if n else 0, "g"),
+    ("Lemak Trans", n.lemak_trans if n else 0, "g"),
+    ("Kolesterol", n.kolesterol if n else 0, "mg"),
+    ("Karbohidrat Total", n.karbohidrat_total if n else 0, "g"),
+    ("Serat Pangan", n.serat if n else 0, "g"),
+    ("Gula Total", n.gula_total if n else 0, "g"),
+    ("Sukrosa", n.sukrosa if n else 0, "g"),
+    ("Natrium", n.natrium if n else 0, "mg")
+] %}
+
+<section class="section pt-4">
+
+    <div class="container">
+
+        <a href="{{ url_for('history.index') }}" class="d-inline-flex align-items-center gap-1 mb-4 fw-bold text-decoration-none">
+            <i class="bi bi-arrow-left"></i>
+            Kembali ke Riwayat
+        </a>
+
+        <div class="row g-4">
+
+            <div class="col-lg-5">
+
+                <div class="app-card fade-up">
+
+                    <img
+                        src="{{ url_for('static', filename=item.original_image) }}"
+                        class="img-fluid w-100"
+                        style="border:2px solid var(--ink); border-radius:12px;"
+                        alt="Gambar label {{ item.product_name }}">
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div>
+                            <span class="d-block" style="font-size:.8rem;color:var(--text-muted);font-weight:700;">
+                                OCR CONFIDENCE
+                            </span>
+                            <h3 class="mb-0">
+                                {{ item.ocr_confidence|round(1) if item.ocr_confidence is not none else 0 }}%
+                            </h3>
+                        </div>
+
+                        {% if item.manually_corrected %}
+                        <span class="badge badge-valid">
+                            <i class="bi bi-pencil-fill"></i> Dikoreksi Manual
+                        </span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-7">
+
+                <div class="app-card fade-up delay1">
+
+                    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+
+                        <div>
+                            <h3 class="mb-1">{{ item.product_name or 'Produk Tanpa Nama' }}</h3>
+                            <small class="text-muted">
+                                {{ item.created_at.strftime('%d %B %Y, %H:%M') }}
+                            </small>
+                        </div>
+
+                        <span class="meal-badge {{ item.meal_type|lower }}">
+                            {{ item.meal_type }}
+                        </span>
+
+                    </div>
+
+                    <div class="row g-3 mb-3">
+
+                        <div class="col-6">
+                            <span class="d-block" style="font-size:.8rem;color:var(--text-muted);font-weight:700;">
+                                TAKARAN SAJI
+                            </span>
+                            <strong>{{ n.serving_size if n and n.serving_size else '-' }}</strong>
+                        </div>
+
+                        <div class="col-6">
+                            <span class="d-block" style="font-size:.8rem;color:var(--text-muted);font-weight:700;">
+                                SAJIAN PER KEMASAN
+                            </span>
+                            <strong>{{ n.serving_per_container if n and n.serving_per_container else '-' }}</strong>
+                        </div>
+
+                    </div>
+
+                    <hr style="border-top:2px dashed rgba(55,55,31,.2);">
+
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Komponen</th>
+                                    <th>Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for label, value, unit in fields %}
+                                <tr>
+                                    <td>{{ label }}</td>
+                                    <td>{{ value|round(2) }} {{ unit }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+
+                        <a href="{{ url_for('history.index') }}" class="btn btn-outline-success">
+                            Kembali
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('history.delete', history_id=item.id) }}"
+                            onsubmit="return confirm('Hapus riwayat ini?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-trash3"></i>
+                                Hapus
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

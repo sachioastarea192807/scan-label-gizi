@@ -1,0 +1,38 @@
+/* ==========================================
+   LOADING OVERLAY
+========================================== */
+
+#loading {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 253, 246, .92);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#loading .loading-card {
+    background: var(--white);
+    border: var(--border-w) solid var(--ink);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 40px 50px;
+    text-align: center;
+}
+
+#loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: .35em;
+}
+
+#loading p {
+    margin: 16px 0 0;
+    font-weight: 700;
+    color: var(--ink);
+}

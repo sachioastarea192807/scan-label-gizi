@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Scan Label Gizi{% endblock %}
+    </title>
+
+    <!-- Fonts -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Poppins:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/animation.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/loading.css') }}">
+
+    {% block css %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar navbar-expand-lg">
+
+        <div class="container">
+
+            <a class="navbar-brand"
+               href="{{ url_for('home.index') }}">
+
+                <span class="brand-mark">
+                    <i class="bi bi-camera-fill"></i>
+                </span>
+
+                Scan Label Gizi
+
+            </a>
+
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbar">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse"
+                 id="navbar">
+
+                <ul class="navbar-nav ms-auto">
+
+                    {% if current_user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path=='/dashboard' %}active{% endif %}"
+                           href="{{ url_for('dashboard.index') }}">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path=='/upload' %}active{% endif %}"
+                           href="{{ url_for('ocr.upload_page') }}">
+                            Upload
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path.startswith('/history') %}active{% endif %}"
+                           href="{{ url_for('history.index') }}">
+                            Riwayat
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path.startswith('/monitoring') %}active{% endif %}"
+                           href="{{ url_for('monitoring.index') }}">
+                            Monitoring
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path.startswith('/profile') %}active{% endif %}"
+                           href="{{ url_for('profile.index') }}">
+                            Profil
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="btn btn-outline-danger btn-sm ms-lg-2"
+                           href="{{ url_for('auth.logout') }}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Logout
+                        </a>
+                    </li>
+
+                    {% else %}
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path=='/' %}active{% endif %}"
+                           href="{{ url_for('home.index') }}">
+                            Beranda
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path=='/upload' %}active{% endif %}"
+                           href="{{ url_for('ocr.upload_page') }}">
+                            Upload
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path=='/about' %}active{% endif %}"
+                           href="{{ url_for('home.about') }}">
+                            About
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path=='/login' %}active{% endif %}"
+                           href="{{ url_for('auth.login') }}">
+                            Login
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="btn btn-success btn-sm ms-lg-2"
+                           href="{{ url_for('auth.register') }}">
+                            Register
+                        </a>
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- ================= FLASH ================= -->
+
+    <div class="container mt-3">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+
+        <div class="alert alert-{{ 'danger' if category=='error' else category }} alert-dismissible fade show">
+
+            {{ message }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Tutup">
+            </button>
+
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+    </div>
+
+    <!-- ================= CONTENT ================= -->
+
+    <main>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-7">
+
+                    <div class="footer-links">
+                        <a href="{{ url_for('home.index') }}">Beranda</a>
+                        <a href="{{ url_for('home.about') }}">Tentang</a>
+                        <a href="{{ url_for('ocr.upload_page') }}">Upload</a>
+                    </div>
+
+                    <p class="mb-0">
+                        Scan Label Gizi membantu kamu membaca informasi
+                        nilai gizi pada label kemasan makanan secara
+                        otomatis menggunakan OCR.
+                    </p>
+
+                </div>
+
+                <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
+
+                    <h5>Scan Label Gizi</h5>
+
+                    <small>
+                        © 2026 Scan Label Gizi &middot; Track Your Health Playfully
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- ================= LOADING OVERLAY ================= -->
+
+    {% include 'components/loading.html' %}
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <script
+        src="{{ url_for('static', filename='js/navbar.js') }}">
+    </script>
+
+    <script
+        src="{{ url_for('static', filename='js/loading.js') }}">
+    </script>
+
+    {% block js %}
+    {% endblock %}
+
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Riwayat Scan | Scan Label Gizi{% endblock %}
+
+{% block content %}
+
+<section class="section pt-4">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <h2 class="mb-0">Riwayat Scan</h2>
+        </div>
+
+        <!-- ================= SEARCH & FILTER ================= -->
+
+        <form method="GET" action="{{ url_for('history.index') }}" class="app-card mb-4 fade-up">
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-7">
+                    <label class="form-label">Cari Produk</label>
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control"
+                        placeholder="Cari nama produk..."
+                        value="{{ keyword }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Jenis Konsumsi</label>
+                    <select name="meal_type" class="form-select">
+                        <option value="" {{ 'selected' if not meal_type }}>Semua</option>
+                        <option value="Sarapan" {{ 'selected' if meal_type=='Sarapan' }}>Sarapan</option>
+                        <option value="Siang" {{ 'selected' if meal_type=='Siang' }}>Siang</option>
+                        <option value="Malam" {{ 'selected' if meal_type=='Malam' }}>Malam</option>
+                        <option value="Snack" {{ 'selected' if meal_type=='Snack' }}>Snack</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-search"></i>
+                        Cari
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+        <!-- ================= CARDS ================= -->
+
+        {% if histories|length == 0 %}
+
+        <div class="app-card text-center py-5 fade-up">
+            <img
+                src="{{ url_for('static', filename='img/empty-state.svg') }}"
+                alt="Belum ada riwayat"
+                style="width:140px;" class="mb-3">
+            <h5>Belum ada riwayat scan</h5>
+            <p>Riwayat scan label gizi kamu akan muncul di sini.</p>
+            <a href="{{ url_for('ocr.upload_page') }}" class="btn btn-success">
+                <i class="bi bi-camera"></i>
+                Scan Sekarang
+            </a>
+        </div>
+
+        {% else %}
+
+        <div class="row g-4">
+
+            {% for item in histories %}
+            <div class="col-md-6 col-lg-4">
+
+                <div class="history-card card-lift h-100 fade-up">
+
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="meal-icon">
+                                <i class="bi bi-cup-straw"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ item.product_name or 'Produk Tanpa Nama' }}</h6>
+                                <small class="text-muted">
+                                    {{ item.created_at.strftime('%d %b %Y, %H:%M') }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <span class="meal-badge {{ item.meal_type|lower }}">
+                            {{ item.meal_type }}
+                        </span>
+
+                    </div>
+
+                    {% if item.ocr_confidence is not none and item.ocr_confidence < 70 %}
+                    <span class="badge badge-check mb-2">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Perlu Dicek
+                    </span>
+                    {% endif %}
+
+                    <div class="nutrition-grid">
+
+                        <div class="n-item">
+                            <span>Energi</span>
+                            <h5>{{ (item.nutrition_result.energi if item.nutrition_result else 0)|round(0)|int }} kkal</h5>
+                        </div>
+
+                        <div class="n-item">
+                            <span>Protein</span>
+                            <h5>{{ (item.nutrition_result.protein if item.nutrition_result else 0)|round(1) }} g</h5>
+                        </div>
+
+                        <div class="n-item">
+                            <span>Karbohidrat</span>
+                            <h5>{{ (item.nutrition_result.karbohidrat_total if item.nutrition_result else 0)|round(1) }} g</h5>
+                        </div>
+
+                        <div class="n-item">
+                            <span>Gula</span>
+                            <h5>{{ (item.nutrition_result.gula_total if item.nutrition_result else 0)|round(1) }} g</h5>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+
+                        <a href="{{ url_for('history.detail', history_id=item.id) }}"
+                           class="btn btn-success btn-sm flex-fill">
+                            Detail
+                        </a>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('history.delete', history_id=item.id) }}"
+                            class="flex-fill"
+                            onsubmit="return confirm('Hapus riwayat ini?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                Hapus
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

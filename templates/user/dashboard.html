@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Scan Label Gizi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/monitoring.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="monitor-section">
+
+    <div class="container">
+
+        <h2 class="monitor-title fade-up">
+            Halo, {{ current_user.nama.split(' ')[0] }}
+            <span style="display:inline-block;">👋</span>
+        </h2>
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-4">
+                <div class="stat-tile fade-up">
+                    <h6>Total Scan</h6>
+                    <div class="stat-value">{{ total_scan }}</div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+
+                <div class="app-card fade-up delay1 h-100">
+
+                    <h5 class="mb-3">Ringkasan Nutrisi Hari Ini</h5>
+
+                    <div class="nutrition-grid mt-0">
+
+                        <div class="n-item">
+                            <span>Energi</span>
+                            <h5>{{ nutrition[0]|round(0)|int }} kkal</h5>
+                        </div>
+
+                        <div class="n-item">
+                            <span>Protein</span>
+                            <h5>{{ nutrition[1]|round(1) }} g</h5>
+                        </div>
+
+                        <div class="n-item">
+                            <span>Karbohidrat</span>
+                            <h5>{{ nutrition[3]|round(1) }} g</h5>
+                        </div>
+
+                        <div class="n-item">
+                            <span>Gula</span>
+                            <h5>{{ nutrition[4]|round(1) }} g</h5>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="app-card fade-up delay2 mb-4">
+
+            <div class="m-list-head">
+                <h5>Riwayat Scan Terbaru</h5>
+                <a href="{{ url_for('history.index') }}">Lihat Semua</a>
+            </div>
+
+            {% if latest|length == 0 %}
+
+            <div class="monitor-empty">
+                <img src="{{ url_for('static', filename='img/market3.jpe') }}" alt="Belum ada data">
+                <p class="mb-0">Belum ada riwayat scan. Yuk mulai scan label pertamamu!</p>
+            </div>
+
+            {% else %}
+
+            {% for item in latest %}
+            <div class="meal-row">
+
+                <div class="meal-icon">
+                    <i class="bi bi-cup-straw"></i>
+                </div>
+
+                <div class="meal-info">
+                    <h6>{{ item.product_name or 'Produk Tanpa Nama' }}</h6>
+                    <small>{{ item.created_at.strftime('%d %b %Y, %H:%M') }}</small>
+                </div>
+
+                <div class="meal-kcal">
+                    {{ (item.nutrition_result.energi if item.nutrition_result else 0)|round(0)|int }} kkal
+                </div>
+
+                <a href="{{ url_for('history.detail', history_id=item.id) }}"
+                   class="btn btn-outline-success btn-sm ms-3">
+                    Detail
+                </a>
+
+            </div>
+            {% endfor %}
+
+            {% endif %}
+
+        </div>
+
+        <div class="text-center">
+            <a href="{{ url_for('ocr.upload_page') }}" class="btn btn-success btn-lg px-5">
+                <i class="bi bi-camera"></i>
+                Scan Label Gizi Yang Baru
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

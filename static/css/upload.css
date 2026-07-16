@@ -1,0 +1,123 @@
+/* ==========================================
+   UPLOAD PAGE
+========================================== */
+
+.upload-section {
+    padding: 60px 0 40px;
+}
+
+.upload-card {
+    padding: 46px;
+}
+
+.upload-card .upload-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.upload-card .upload-header h2 {
+    font-weight: 800;
+}
+
+.upload-card .upload-header p {
+    max-width: 560px;
+    margin: 8px auto 0;
+}
+
+/* ========================= */
+
+#drop-area {
+    display: block;
+    border: var(--border-w) dashed var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 64px 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: .25s;
+    background: var(--cream);
+    position: relative;
+}
+
+#drop-area:hover {
+    background: var(--light-green);
+}
+
+#drop-area.drag {
+    background: var(--light-green);
+    transform: scale(.99);
+}
+
+.upload-icon-badge {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: var(--border-w-sm) solid var(--ink);
+    color: var(--white);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-soft);
+}
+
+#drop-area h4 {
+    margin-top: 4px;
+    font-weight: 800;
+}
+
+#drop-area .browse-text {
+    color: var(--primary-dark);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+#drop-area small {
+    display: block;
+    margin-top: 10px;
+    color: var(--text-muted);
+}
+
+/* ========================= */
+
+#preview-area {
+    text-align: center;
+}
+
+#preview-image {
+    display: none;
+    max-width: 380px;
+    width: 100%;
+    border-radius: var(--radius);
+    border: var(--border-w) solid var(--ink);
+    box-shadow: var(--shadow-card);
+    margin: auto;
+}
+
+#image-info {
+    margin-top: 16px;
+    font-weight: 600;
+}
+
+#image-info h5 {
+    margin-bottom: 2px;
+}
+
+#image-info p {
+    margin-bottom: 0;
+    color: var(--text-muted);
+}
+
+/* ========================= */
+
+@media (max-width: 768px) {
+
+    .upload-card {
+        padding: 26px;
+    }
+
+    #drop-area {
+        padding: 40px 18px;
+    }
+}

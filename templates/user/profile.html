@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil | Scan Label Gizi{% endblock %}
+
+{% block content %}
+
+<section class="section pt-4">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-6">
+
+                <div class="profile-card text-center fade-up">
+
+                    <div class="avatar">
+                        {% if user.photo %}
+                        <img src="{{ url_for('static', filename=user.photo) }}" alt="{{ user.nama }}">
+                        {% else %}
+                        <i class="bi bi-person-fill"></i>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="mb-0">{{ user.nama }}</h3>
+                    <p class="mb-4">{{ user.email }}</p>
+
+                    <div class="row g-3 mb-4">
+
+                        <div class="col-6">
+                            <div class="stat-tile">
+                                <h6>Total Scan</h6>
+                                <div class="stat-value" style="font-size:1.8rem;">{{ total_scan }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="stat-tile">
+                                <h6>Scan Terakhir</h6>
+                                <div style="font-size:.95rem; font-weight:700; margin-top:10px;">
+                                    {% if last_scan %}
+                                    {{ last_scan.created_at.strftime('%d %b %Y') }}
+                                    {% else %}
+                                    Belum ada
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="info-item">
+                        <span>Nama Lengkap</span>
+                        <strong>{{ user.nama }}</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Alamat Email</span>
+                        <strong>{{ user.email }}</strong>
+                    </div>
+
+                    {% if user.tinggi_badan %}
+                    <div class="info-item">
+                        <span>Tinggi Badan</span>
+                        <strong>{{ user.tinggi_badan }} cm</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if user.berat_badan %}
+                    <div class="info-item">
+                        <span>Berat Badan</span>
+                        <strong>{{ user.berat_badan }} kg</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if user.umur %}
+                    <div class="info-item">
+                        <span>Umur</span>
+                        <strong>{{ user.umur }} tahun</strong>
+                    </div>
+                    {% endif %}
+
+                    <div class="info-item">
+                        <span>Bergabung Sejak</span>
+                        <strong>{{ user.created_at.strftime('%d %B %Y') if user.created_at else '-' }}</strong>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <a href="{{ url_for('profile.edit') }}" class="btn btn-success">
+                            <i class="bi bi-pencil-square"></i>
+                            Edit Profil
+                        </a>
+
+                        <a href="{{ url_for('profile.change_password') }}" class="btn btn-outline-warning">
+                            <i class="bi bi-key-fill"></i>
+                            Ganti Password
+                        </a>
+
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Logout
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+
+{% block title %}Hasil Scan | Scan Label Gizi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/upload.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{% set fields = [
+    ("energi", "Energi", "kkal"),
+    ("protein", "Protein", "g"),
+    ("lemak_total", "Lemak Total", "g"),
+    ("lemak_jenuh", "Lemak Jenuh", "g"),
+    ("lemak_trans", "Lemak Trans", "g"),
+    ("kolesterol", "Kolesterol", "mg"),
+    ("karbohidrat_total", "Karbohidrat Total", "g"),
+    ("serat", "Serat Pangan", "g"),
+    ("gula_total", "Gula Total", "g"),
+    ("sukrosa", "Sukrosa", "g"),
+    ("natrium", "Natrium", "mg")
+] %}
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-title">
+            <span class="eyebrow">
+                <i class="bi bi-magic"></i>
+                Hasil Scan
+            </span>
+            <h2>Hasil Upload Label Informasi Gizi</h2>
+            <p>
+                Periksa kembali hasil pembacaan OCR di bawah ini,
+                lakukan koreksi bila diperlukan, lalu simpan ke riwayat.
+            </p>
+        </div>
+
+        <form method="POST" action="{{ url_for('history.save_result') }}">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <input type="hidden" name="original_image" value="{{ original_image }}">
+            <input type="hidden" name="preprocess_image" value="{{ preprocess_image }}">
+            <input type="hidden" name="raw_text" value="{{ raw_text }}">
+            <input type="hidden" name="cleaned_text" value="{{ cleaned_text }}">
+            <input type="hidden" name="ocr_confidence" value="{{ confidence }}">
+            <input type="hidden" name="manually_corrected" value="true">
+
+            <div class="row g-4">
+
+                <!-- ================= LEFT : IMAGE ================= -->
+
+                <div class="col-lg-5">
+
+                    <div class="app-card h-100">
+
+                        <img
+                            src="{{ url_for('static', filename=original_image) }}"
+                            class="img-fluid rounded-3 border w-100"
+                            style="border: 2px solid var(--ink) !important; border-radius: 12px;"
+                            alt="Gambar label yang diupload">
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+
+                            <div>
+                                <span class="d-block" style="font-size:.8rem;color:var(--text-muted);font-weight:700;">
+                                    OCR CONFIDENCE
+                                </span>
+                                <h3 class="mb-0">
+                                    {{ confidence|round(1) if confidence is not none else 0 }}%
+                                </h3>
+                            </div>
+
+                            {% if confidence is not none and confidence >= 70 %}
+                            <span class="badge badge-valid">
+                                <i class="bi bi-check-circle-fill"></i> Confidence Baik
+                            </span>
+                            {% else %}
+                            <span class="badge badge-check">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Perlu Dicek
+                            </span>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="progress mt-3">
+                            <div class="progress-bar {{ 'bar-orange' if confidence is none or confidence < 70 else '' }}"
+                                 role="progressbar"
+                                 style="width: {{ confidence|round(0)|int if confidence is not none else 0 }}%;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ================= RIGHT : DATA HASIL ================= -->
+
+                <div class="col-lg-7">
+
+                    <div class="app-card h-100">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">Data Hasil</h4>
+                            <span class="eyebrow mb-0">
+                                <i class="bi bi-pencil-square"></i>
+                                Bisa diedit
+                            </span>
+                        </div>
+
+                        <div class="row g-3 mb-2">
+
+                            <div class="col-md-8">
+                                <label class="form-label">Nama Produk</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="product_name"
+                                    placeholder="Contoh: Indomie Goreng"
+                                    value="{{ product_name if product_name else '' }}">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Jenis Konsumsi</label>
+                                <select class="form-select" name="meal_type">
+                                    <option value="Sarapan">Sarapan</option>
+                                    <option value="Siang">Siang</option>
+                                    <option value="Malam">Malam</option>
+                                    <option value="Snack" selected>Snack</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Takaran Saji</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="serving_size"
+                                    placeholder="Contoh: 80 g"
+                                    value="{{ nutrition.takaran_saji.value if nutrition.takaran_saji and nutrition.takaran_saji.value is not none else '' }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Sajian Per Kemasan</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="serving_per_container"
+                                    placeholder="Contoh: 2"
+                                    value="{{ nutrition.sajian_per_kemasan.value if nutrition.sajian_per_kemasan and nutrition.sajian_per_kemasan.value is not none else '' }}">
+                            </div>
+
+                        </div>
+
+                        <hr class="my-4" style="border-top:2px dashed rgba(55,55,31,.2);">
+
+                        <div class="table-responsive">
+
+                            <table class="table align-middle mb-0">
+
+                                <thead>
+                                    <tr>
+                                        <th>Komponen</th>
+                                        <th style="width:150px;">Nilai</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    {% for key, label, unit in fields %}
+                                    <tr>
+
+                                        <td>{{ label }}</td>
+
+                                        <td>
+                                            <div class="input-group input-group-sm">
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    name="{{ key }}"
+                                                    class="form-control"
+                                                    value="{{ nutrition[key].value if nutrition[key] and nutrition[key].value is not none else '' }}">
+                                                <span class="input-group-text">{{ unit }}</span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            {% set status = nutrition[key].status if nutrition[key] else 'Kosong' %}
+                                            {% if status == "Valid" %}
+                                            <span class="badge badge-valid">Valid</span>
+                                            {% elif status == "Perlu Dicek" %}
+                                            <span class="badge badge-check">Perlu Dicek</span>
+                                            {% elif status == "Unit Salah" %}
+                                            <span class="badge badge-check" title="Nilai terbaca, tapi satuannya perlu dicek">Unit Perlu Dicek</span>
+                                            {% elif status == "Di Luar Batas" %}
+                                            <span class="badge badge-empty" title="Nilai di luar rentang wajar">Di Luar Batas</span>
+                                            {% elif status == "Tidak Logis" %}
+                                            <span class="badge badge-empty" title="Tidak sesuai perbandingan antar komponen">Tidak Logis</span>
+                                            {% elif status == "Tidak Valid" %}
+                                            <span class="badge badge-empty">Tidak Valid</span>
+                                            {% else %}
+                                            <span class="badge badge-empty">Kosong</span>
+                                            {% endif %}
+                                        </td>
+
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-3 justify-content-center mt-5">
+
+                            <a href="{{ url_for('ocr.upload_page') }}"
+                               class="btn btn-outline-success btn-lg">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                Scan Ulang
+                            </a>
+
+                            {% if current_user.is_authenticated %}
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-save"></i>
+                                Simpan Hasil
+                            </button>
+                            {% else %}
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                Login &amp; Simpan Hasil
+                            </button>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

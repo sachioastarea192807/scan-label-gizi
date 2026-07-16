@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Scan Label Gizi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+
+    <div class="container">
+
+        <div class="auth-split fade-up">
+
+            <!-- ================= LEFT : BRAND + INFO ================= -->
+
+            <div class="auth-info">
+
+                <h2 class="auth-brand">
+                    Scan Label <span class="brand-accent">Gizi</span>
+                </h2>
+
+                <p>
+                    Dengan masuk ke akun anda, anda akan bisa mengakses:
+                </p>
+
+                <ul>
+                    <li><i class="bi bi-check-lg"></i> Simpan Hasil Scan Label</li>
+                    <li><i class="bi bi-check-lg"></i> Edit Hasil Scan Label</li>
+                    <li><i class="bi bi-check-lg"></i> Riwayat Pemindaian</li>
+                    <li><i class="bi bi-check-lg"></i> Monitoring Harian</li>
+                </ul>
+
+                <div class="auth-illustration">
+                    <img
+                        src="{{ url_for('static', filename='img/market2.jpe') }}"
+                        alt="Ilustrasi Scan Label Gizi">
+                </div>
+
+            </div>
+
+            <!-- ================= RIGHT : FORM ================= -->
+
+            <div class="auth-card">
+
+                <h2>Selamat Datang!</h2>
+                <p>Masuk ke akun anda untuk mengakses lebih lanjut.</p>
+
+                <form method="POST" action="{{ url_for('auth.login') }}">
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+                            <input
+                                type="email"
+                                class="form-control"
+                                name="email"
+                                placeholder="mail@gmail.com"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="password"
+                                name="password"
+                                placeholder="Masukkan password"
+                                required>
+                            <button
+                                class="btn btn-light"
+                                type="button"
+                                onclick="togglePassword('password', this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="auth-row">
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember">
+                            <label class="form-check-label" for="remember">Ingat password</label>
+                        </div>
+
+                        <a href="#">Lupa password?</a>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 mt-3">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Login
+                    </button>
+
+                </form>
+
+                <hr>
+
+                <div class="auth-footer-link">
+                    Tidak Punya Akun?
+                    <a href="{{ url_for('auth.register') }}">Register Disini</a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block js %}
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Label Gizi | Scan Label Gizi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/upload.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="upload-section">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-9">
+
+                <div class="upload-card fade-up">
+
+                    <div class="upload-header">
+
+                        <span class="eyebrow">
+                            <i class="bi bi-cloud-upload"></i>
+                            Upload
+                        </span>
+
+                        <h2>Upload Label Informasi Gizi</h2>
+
+                        <p>
+                            Upload foto label informasi nilai gizi,
+                            sistem akan membaca kandungan nutrisi
+                            secara otomatis menggunakan OCR.
+                        </p>
+
+                    </div>
+
+                    <form
+                        action="{{ url_for('ocr.upload') }}"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        onsubmit="showLoading()">
+
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <!-- Drag Area -->
+
+                        <label
+                            for="image"
+                            id="drop-area">
+
+                            <input
+                                type="file"
+                                name="image"
+                                id="image"
+                                accept=".jpg,.jpeg,.png"
+                                hidden>
+
+                            <div id="upload-content">
+
+                                <div class="upload-icon-badge">
+                                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                                </div>
+
+                                <h4>Drag &amp; Drop</h4>
+
+                                <p class="mb-0">
+                                    atau
+                                    <span class="browse-text">klik di sini</span>
+                                    untuk memilih gambar
+                                </p>
+
+                                <small>
+                                    Format yang didukung: JPG &middot; JPEG &middot; PNG
+                                </small>
+
+                            </div>
+
+                        </label>
+
+                        <!-- Preview -->
+
+                        <div
+                            id="preview-area"
+                            class="mt-5">
+
+                            <img id="preview-image" alt="Pratinjau gambar">
+
+                            <div id="image-info"></div>
+
+                        </div>
+
+                        <!-- Button -->
+
+                        <div class="text-center mt-5">
+
+                            <button class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-search"></i>
+                                Mulai OCR
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+const input = document.getElementById("image");
+const preview = document.getElementById("preview-image");
+const info = document.getElementById("image-info");
+const area = document.getElementById("drop-area");
+
+input.addEventListener("change", previewImage);
+
+function previewImage() {
+
+    const file = input.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        preview.src = e.target.result;
+        preview.style.display = "block";
+
+        info.innerHTML =
+            "<h5>" + file.name + "</h5>" +
+            "<p>" + Math.round(file.size / 1024) + " KB</p>";
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+/* Drag & drop */
+
+area.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    area.classList.add("drag");
+});
+
+area.addEventListener("dragleave", function () {
+    area.classList.remove("drag");
+});
+
+area.addEventListener("drop", function (e) {
+    e.preventDefault();
+    area.classList.remove("drag");
+    input.files = e.dataTransfer.files;
+    previewImage();
+});
+
+</script>
+
+{% endblock %}

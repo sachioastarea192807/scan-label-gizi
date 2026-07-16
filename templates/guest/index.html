@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Beranda | Scan Label Gizi{% endblock %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="container">
+
+        <div class="row g-4 align-items-stretch">
+
+            <div class="col-lg-6">
+
+                <div class="hero-card fade-up">
+
+                    <h1>
+                        Baca Label Gizi
+                        <br>
+                        Secara Otomatis
+                    </h1>
+
+                    <span class="caps-subtitle">
+                        Di Website Scan Label Gizi
+                    </span>
+
+                    <p>
+                        Scan Label Gizi merupakan website yang membantu
+                        pengguna untuk membaca informasi nilai gizi pada
+                        kemasan makanan/minuman dengan menggunakan
+                        teknologi Optical Character Recognition (OCR).
+                        Hasil pembacaan akan diproses, dinormalisasi, dan
+                        divalidasi. Kemudian hasil dapat disimpan untuk
+                        monitoring konsumsi harian.
+                    </p>
+
+                    <div class="hero-button">
+
+                        <a href="{{ url_for('ocr.upload_page') }}"
+                           class="btn btn-success btn-lg">
+                            <i class="bi bi-cloud-upload"></i>
+                            Upload Gambar
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="hero-illustration-card fade-up delay1">
+
+                    <img
+                        src="{{ url_for('static', filename='img/market1.jpe') }}"
+                        alt="Ilustrasi produk makanan kemasan">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= FEATURE ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-title">
+            <h2>Fitur Utama</h2>
+            <p>
+                Fitur utama yang tersedia pada website Scan Label Gizi.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up">
+                    <div class="feature-icon icon-orange mx-auto">
+                        <i class="bi bi-camera-fill"></i>
+                    </div>
+                    <h4>OCR</h4>
+                    <p>
+                        Mengekstrak teks dari label kemasan makanan
+                        menggunakan Tesseract OCR.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up delay1">
+                    <div class="feature-icon icon-orange mx-auto">
+                        <i class="bi bi-list-ul"></i>
+                    </div>
+                    <h4>Normalisasi</h4>
+                    <p>
+                        Menyamakan format penulisan agar hasil OCR
+                        lebih konsisten.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up delay2">
+                    <div class="feature-icon icon-orange mx-auto">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Validasi</h4>
+                    <p>
+                        Memastikan hasil OCR tetap sesuai dengan
+                        format label gizi.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up delay3">
+                    <div class="feature-icon icon-orange mx-auto">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h4>Monitoring</h4>
+                    <p>
+                        Menyimpan konsumsi harian sehingga pengguna
+                        dapat memantau asupan gizinya.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= CTA ================= -->
+
+<section class="section pt-0">
+
+    <div class="container">
+
+        <div class="cta-box fade-up">
+
+            <h2>Mulai Membaca Label Gizi</h2>
+
+            <span class="caps-subtitle">
+                Upload gambar label nutrisi kemudian sistem akan
+                membaca kandungan gizi secara otomatis
+            </span>
+
+            <a href="{{ url_for('ocr.upload_page') }}"
+               class="btn btn-success btn-lg mt-2">
+                <i class="bi bi-cloud-upload"></i>
+                Upload Gambar
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

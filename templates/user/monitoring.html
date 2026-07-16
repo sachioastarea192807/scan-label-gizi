@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}Monitoring | Scan Label Gizi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/monitoring.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{% set energi_val = nutrition[0]|round(0)|int %}
+{% set protein_val = nutrition[1]|round(1) %}
+{% set gula_val = nutrition[4]|round(1) %}
+{% set natrium_val = nutrition[5]|round(0)|int %}
+
+{% set r = 78 %}
+{% set circumference = 2 * 3.14159265 * r %}
+{% set energi_pct = progress_data.energi %}
+{% set offset = circumference - (circumference * energi_pct / 100) %}
+
+<section class="monitor-section">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+
+            <h2 class="monitor-title mb-0">Monitoring Komsumsi Hari Ini</h2>
+
+            <form
+                method="POST"
+                action="{{ url_for('monitoring.clear_today') }}"
+                onsubmit="return confirm('Hapus semua data monitoring hari ini?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash3"></i>
+                    Hapus Data Hari Ini
+                </button>
+            </form>
+
+        </div>
+
+        {% if alerts %}
+        <div class="alert alert-warning fade-up">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ alerts|join(' &middot; ')|safe }}
+        </div>
+        {% endif %}
+
+        <!-- ================= TOP ROW ================= -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-lg-5">
+
+                <div class="monitor-card app-card calorie-card fade-up h-100">
+
+                    <span class="m-label">Daily Calories</span>
+
+                    <div class="ring-wrap">
+
+                        <svg width="170" height="170" viewBox="0 0 170 170">
+                            <circle class="ring-bg" cx="85" cy="85" r="{{ r }}"></circle>
+                            <circle
+                                class="ring-value"
+                                cx="85" cy="85" r="{{ r }}"
+                                stroke-dasharray="{{ circumference }}"
+                                stroke-dashoffset="{{ offset }}"></circle>
+                        </svg>
+
+                        <div class="ring-center">
+                            <span class="num">
+                                {% if energi_val >= 1000 %}
+                                    {{ (energi_val / 1000)|round(1) }}k
+                                {% else %}
+                                    {{ energi_val }}
+                                {% endif %}
+                            </span>
+                            <span class="denom">/ {{ target.energi }} kcal</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-7">
+
+                <div class="monitor-card sugar-card fade-up delay1 h-100">
+
+                    {% if progress_data.gula_total < 70 %}
+                    <span class="float-badge left"><i class="bi bi-check-circle-fill"></i> On Track!</span>
+                    {% elif progress_data.gula_total < 100 %}
+                    <span class="float-badge left" style="background:var(--orange);">
+                        <i class="bi bi-exclamation-circle-fill"></i> Hampir Limit
+                    </span>
+                    {% else %}
+                    <span class="float-badge left" style="background:var(--danger);">
+                        <i class="bi bi-x-circle-fill"></i> Melebihi
+                    </span>
+                    {% endif %}
+
+                    <span class="float-badge right">Limit: {{ target.gula_total|int }}g</span>
+
+                    <h4>Sugar Boundary</h4>
+                    <p>Keep it low today.</p>
+
+                    <div class="sugar-value">
+                        {{ gula_val }}<span class="unit">g</span>
+                    </div>
+
+                    <div class="progress">
+                        <div
+                            class="progress-bar {{ 'bar-orange' if progress_data.gula_total >= 70 and progress_data.gula_total < 100 else ('bar-danger' if progress_data.gula_total >= 100 else '') }}"
+                            style="width: {{ progress_data.gula_total }}%;">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= SODIUM GUARD ================= -->
+
+        <div class="app-card sodium-card fade-up delay2 mb-4">
+
+            <div class="sodium-left">
+
+                {% if progress_data.natrium >= 100 %}
+                <h4><i class="bi bi-exclamation-triangle-fill text-orange"></i> Sodium Guard</h4>
+                <p>Melebihi batas harian.</p>
+                {% elif progress_data.natrium >= 70 %}
+                <h4><i class="bi bi-exclamation-triangle-fill text-orange"></i> Sodium Guard</h4>
+                <p>Approaching daily limit.</p>
+                {% else %}
+                <h4><i class="bi bi-shield-check text-primary-brand"></i> Sodium Guard</h4>
+                <p>Masih dalam batas aman.</p>
+                {% endif %}
+
+            </div>
+
+            <div class="sodium-value">
+                {{ natrium_val }}<span class="unit">mg</span>
+            </div>
+
+            <div class="sodium-note">
+
+                {% if progress_data.natrium >= 70 %}
+                <span class="note-text">
+                    <i class="bi bi-lightbulb-fill text-orange"></i>
+                    Kurangi camilan asin untuk sisa hari ini.
+                </span>
+                {% endif %}
+
+                {% if progress_data.natrium >= 100 %}
+                <span class="caution-tag">Caution</span>
+                {% elif progress_data.natrium >= 70 %}
+                <span class="caution-tag" style="background:var(--orange);">Waspada</span>
+                {% else %}
+                <span class="caution-tag" style="background:var(--success);">Aman</span>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- ================= LISTS ================= -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-lg-6">
+
+                <div class="app-card m-list-card fade-up delay3">
+
+                    <div class="m-list-head">
+                        <h5>Riwayat Konsumsi Hari Ini</h5>
+                        <a href="{{ url_for('history.index') }}">Lihat Semua</a>
+                    </div>
+
+                    {% if meals|length == 0 %}
+
+                    <div class="monitor-empty">
+                        <img src="{{ url_for('static', filename='img/empty-state.svg') }}" alt="Belum ada data">
+                        <p class="mb-0">Belum ada scan hari ini.</p>
+                    </div>
+
+                    {% else %}
+
+                    {% for item in meals|reverse %}
+                    <div class="meal-row">
+
+                        <div class="meal-icon">
+                            <i class="bi bi-cup-straw"></i>
+                        </div>
+
+                        <div class="meal-info">
+                            <h6>{{ item.product_name or 'Produk Tanpa Nama' }}</h6>
+                            <small>Hari ini, {{ item.created_at.strftime('%H:%M') }}</small>
+                        </div>
+
+                        <div class="meal-kcal">
+                            {{ (item.nutrition_result.energi if item.nutrition_result else 0)|round(0)|int }} kkal
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="app-card m-list-card fade-up delay4">
+
+                    <div class="m-list-head">
+                        <h5>Total Nutrisi Hari Ini</h5>
+                    </div>
+
+                    <div class="total-row">
+                        <span class="t-label">Energi</span>
+                        <span class="t-value">
+                            {{ energi_val }} <span class="t-target">/ {{ target.energi }} kkal</span>
+                        </span>
+                    </div>
+
+                    <div class="total-row">
+                        <span class="t-label">Protein</span>
+                        <span class="t-value">
+                            {{ protein_val }} <span class="t-target">/ {{ target.protein }} g</span>
+                        </span>
+                    </div>
+
+                    <div class="total-row">
+                        <span class="t-label">Natrium</span>
+                        <span class="t-value">
+                            {{ natrium_val }} <span class="t-target">/ {{ target.natrium }} mg</span>
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= ACTIONS ================= -->
+
+        <div class="monitor-actions">
+
+            <a href="{{ url_for('ocr.upload_page') }}" class="btn btn-outline-success btn-lg">
+                <i class="bi bi-camera"></i>
+                Scan Label Gizi Baru
+            </a>
+
+            <a href="{{ url_for('monitoring.export_pdf') }}" class="btn btn-success btn-lg">
+                <i class="bi bi-file-earmark-arrow-down"></i>
+                Simpan Hasil Monitoring
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

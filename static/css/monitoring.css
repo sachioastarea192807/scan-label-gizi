@@ -1,0 +1,330 @@
+/* ==========================================
+   MONITORING PAGE
+========================================== */
+
+.monitor-section {
+    padding: 46px 0 60px;
+}
+
+.monitor-title {
+    font-size: 1.7rem;
+    margin-bottom: 26px;
+}
+
+/* ============ top row cards ============ */
+
+.monitor-card {
+    position: relative;
+    height: 100%;
+}
+
+.monitor-card .m-label {
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* floating badges that overlap the card border */
+
+.float-badge {
+    position: absolute;
+    top: -14px;
+    z-index: 3;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    border: var(--border-w-sm) solid var(--ink);
+    font-weight: 800;
+    font-size: .72rem;
+    white-space: nowrap;
+}
+
+.float-badge.left  { left: 20px; background: var(--primary); color: var(--white); }
+.float-badge.right { right: 20px; background: var(--ink); color: var(--white); }
+
+/* Daily calories ring */
+
+.calorie-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 34px 24px;
+}
+
+.ring-wrap {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    margin: 18px 0 4px;
+}
+
+.ring-wrap svg {
+    transform: rotate(-90deg);
+}
+
+.ring-wrap .ring-bg {
+    fill: none;
+    stroke: #F0EFDD;
+    stroke-width: 14;
+}
+
+.ring-wrap .ring-value {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 14;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease;
+}
+
+.ring-center {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ring-center .num {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1;
+}
+
+.ring-center .denom {
+    font-size: .78rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* Sugar boundary card */
+
+.sugar-card {
+    background: var(--light-green);
+    padding: 30px 28px 26px;
+}
+
+.sugar-card h4 {
+    margin-bottom: 2px;
+}
+
+.sugar-card p {
+    color: rgba(55, 55, 31, .75);
+    margin-bottom: 14px;
+}
+
+.sugar-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 14px;
+}
+
+.sugar-value .unit {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+/* Sodium guard bar */
+
+.sodium-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 26px 30px;
+}
+
+.sodium-card .sodium-left h4 {
+    margin-bottom: 2px;
+}
+
+.sodium-card .sodium-left p {
+    margin-bottom: 0;
+    font-size: .9rem;
+}
+
+.sodium-card .sodium-value {
+    font-size: 2rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.sodium-card .sodium-value .unit {
+    font-size: .95rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+.sodium-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sodium-note .note-text {
+    background: var(--cream);
+    border: var(--border-w-sm) solid var(--ink);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-size: .8rem;
+    font-weight: 700;
+    max-width: 220px;
+}
+
+.sodium-note .caution-tag {
+    background: var(--danger);
+    color: var(--white);
+    border: var(--border-w-sm) solid var(--ink);
+    border-radius: var(--radius-sm);
+    padding: 6px 14px;
+    font-weight: 800;
+    font-size: .72rem;
+    text-transform: uppercase;
+}
+
+/* History / total nutrition columns */
+
+.m-list-card {
+    height: 100%;
+}
+
+.m-list-card .m-list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.m-list-card .m-list-head h5 {
+    margin: 0;
+}
+
+.m-list-card .m-list-head a {
+    font-size: .85rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.meal-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 2px dashed rgba(55, 55, 31, .15);
+}
+
+.meal-row:last-child {
+    border-bottom: none;
+}
+
+.meal-row .meal-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--cream);
+    border: var(--border-w-sm) solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.meal-row .meal-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.meal-row .meal-info h6 {
+    margin: 0;
+    font-size: .95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meal-row .meal-info small {
+    color: var(--text-muted);
+}
+
+.meal-row .meal-kcal {
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 2px dashed rgba(55, 55, 31, .15);
+}
+
+.total-row:last-child {
+    border-bottom: none;
+}
+
+.total-row .t-label {
+    font-weight: 700;
+}
+
+.total-row .t-value {
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.total-row .t-value .t-target {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: .82rem;
+}
+
+.monitor-empty {
+    text-align: center;
+    padding: 26px 10px;
+    color: var(--text-muted);
+}
+
+.monitor-empty img {
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+/* action buttons */
+
+.monitor-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.monitor-actions .btn {
+    flex: 1;
+    min-width: 220px;
+}
+
+@media (max-width: 768px) {
+
+    .sodium-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .float-badge {
+        position: static;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+}

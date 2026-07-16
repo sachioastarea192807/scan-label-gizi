@@ -1,0 +1,57 @@
+/* ==========================================
+   MOTION
+   Subtle, purposeful, respects reduced-motion
+========================================== */
+
+.fade-up {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: fadeUp .7s ease forwards;
+}
+
+.delay1 { animation-delay: .12s; }
+.delay2 { animation-delay: .24s; }
+.delay3 { animation-delay: .36s; }
+.delay4 { animation-delay: .48s; }
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pop-in {
+    opacity: 0;
+    transform: scale(.94);
+    animation: popIn .5s ease forwards;
+}
+
+@keyframes popIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes spinSlow {
+    to { transform: rotate(360deg); }
+}
+
+.icon-spin-hover:hover i {
+    animation: spinSlow .6s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .fade-up,
+    .pop-in {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    * {
+        transition: none !important;
+    }
+}

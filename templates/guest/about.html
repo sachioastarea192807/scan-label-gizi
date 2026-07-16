@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+
+{% block title %}Tentang | Scan Label Gizi{% endblock %}
+
+{% block content %}
+
+<!-- ================= HEADER ================= -->
+
+<section class="section pb-0">
+
+    <div class="container">
+
+        <div class="section-title">
+            <span class="eyebrow">Tentang Kami</span>
+            <h2>Tentang Scan Label Gizi</h2>
+            <p>
+                Website sistem informasi nilai gizi berbasis
+                Optical Character Recognition (OCR).
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= ABOUT ================= -->
+
+<section class="pb-5">
+
+    <div class="container">
+
+        <div class="row align-items-stretch g-4">
+
+            <div class="col-lg-6">
+
+                <div class="hero-illustration-card fade-up">
+                    <img
+                        src="{{ url_for('static', filename='img/market4.jpe') }}"
+                        class="img-fluid"
+                        alt="Ilustrasi tentang Scan Label Gizi">
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="about-box fade-up delay1 h-100 d-flex flex-column justify-content-center">
+
+                    <h3 class="mb-3">
+                        Apa itu Scan Label Gizi?
+                    </h3>
+
+                    <p>
+                        Scan Label Gizi adalah aplikasi web yang membantu
+                        pengguna membaca informasi nilai gizi pada label
+                        kemasan makanan secara otomatis menggunakan
+                        teknologi Optical Character Recognition (OCR).
+                    </p>
+
+                    <p class="mb-0">
+                        Sistem melakukan pembacaan teks, normalisasi data,
+                        dan validasi hasil OCR, kemudian menampilkan
+                        informasi nilai gizi yang mudah dipahami dan bisa
+                        dipantau setiap hari.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= FEATURES ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-title">
+            <span class="eyebrow">Fitur Utama</span>
+            <h2>Fitur utama yang tersedia pada website Scan Label Gizi</h2>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up">
+                    <div class="feature-icon icon-green mx-auto">
+                        <i class="bi bi-camera-fill"></i>
+                    </div>
+                    <h5>OCR</h5>
+                    <p>
+                        Membaca tulisan pada label kemasan
+                        makanan secara otomatis.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up delay1">
+                    <div class="feature-icon icon-orange mx-auto">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <h5>Normalisasi</h5>
+                    <p>
+                        Menyamakan format angka,
+                        satuan, dan nama nutrisi.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up delay2">
+                    <div class="feature-icon icon-blue mx-auto">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+                    <h5>Validasi</h5>
+                    <p>
+                        Memastikan hasil OCR sesuai struktur
+                        label informasi nilai gizi.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center fade-up delay3">
+                    <div class="feature-icon icon-green mx-auto">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+                    <h5>Monitoring</h5>
+                    <p>
+                        Menyimpan dan memantau konsumsi
+                        makanan harian pengguna.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= WORKFLOW ================= -->
+
+<section class="section pt-0">
+
+    <div class="container">
+
+        <div class="section-title">
+            <span class="eyebrow">Alur Sistem</span>
+            <h2>Bagaimana Scan Label Gizi bekerja</h2>
+        </div>
+
+        <div class="app-card">
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 text-center">
+
+                <div class="col">
+                    <div class="pipeline-step">
+                        <div class="step-circle"><i class="bi bi-upload"></i></div>
+                        <h6>Upload</h6>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="pipeline-step">
+                        <div class="step-circle"><i class="bi bi-image"></i></div>
+                        <h6>Preprocessing</h6>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="pipeline-step">
+                        <div class="step-circle"><i class="bi bi-file-earmark-text"></i></div>
+                        <h6>OCR</h6>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="pipeline-step">
+                        <div class="step-circle"><i class="bi bi-arrow-repeat"></i></div>
+                        <h6>Normalisasi</h6>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="pipeline-step">
+                        <div class="step-circle"><i class="bi bi-shield-check"></i></div>
+                        <h6>Validasi</h6>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="pipeline-step">
+                        <div class="step-circle"><i class="bi bi-check-circle"></i></div>
+                        <h6>Hasil</h6>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= TECHNOLOGY ================= -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-title">
+            <span class="eyebrow">Teknologi</span>
+            <h2>Teknologi yang digunakan</h2>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="feature-card text-center fade-up">
+                    <div class="feature-icon icon-cream mx-auto">
+                        <i class="bi bi-code-square"></i>
+                    </div>
+                    <h4>Flask</h4>
+                    <p>Backend aplikasi web.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card text-center fade-up delay1">
+                    <div class="feature-icon icon-cream mx-auto">
+                        <i class="bi bi-file-earmark-image"></i>
+                    </div>
+                    <h4>OpenCV</h4>
+                    <p>Pengolahan citra digital sebelum OCR dilakukan.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card text-center fade-up delay2">
+                    <div class="feature-icon icon-cream mx-auto">
+                        <i class="bi bi-filetype-txt"></i>
+                    </div>
+                    <h4>Tesseract OCR</h4>
+                    <p>Ekstraksi teks dari gambar label nutrisi.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

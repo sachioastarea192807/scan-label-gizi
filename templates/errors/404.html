@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Halaman Tidak Ditemukan | Scan Label Gizi{% endblock %}
+
+{% block content %}
+
+<section class="section text-center">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-6">
+
+                <div class="app-card fade-up py-5">
+
+                    <img
+                        src="{{ url_for('static', filename='img/empty-state.svg') }}"
+                        alt="Halaman tidak ditemukan"
+                        style="width:160px;"
+                        class="mb-4">
+
+                    <span class="eyebrow">404</span>
+
+                    <h2 class="mb-3">Halaman Tidak Ditemukan</h2>
+
+                    <p class="mb-4">
+                        Sepertinya label yang kamu cari tidak dapat dipindai
+                        di sini. Halaman ini mungkin sudah dipindahkan atau
+                        tidak pernah ada.
+                    </p>
+
+                    <a href="{{ url_for('home.index') }}" class="btn btn-success btn-lg">
+                        <i class="bi bi-house-fill"></i>
+                        Kembali ke Beranda
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

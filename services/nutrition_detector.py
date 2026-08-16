@@ -3,9 +3,7 @@ import cv2
 import numpy as np
 import pytesseract
 
-
 HEADER_KEYWORDS = [
-
     "informasi",
     "nilai",
     "gizi",
@@ -16,47 +14,31 @@ HEADER_KEYWORDS = [
     "energy",
     "protein",
     "karbohidrat"
-
 ]
 
 def find_candidates(gray):
 
     edges = cv2.Canny(
-
         gray,
-
         50,
-
         150
-
     )
 
     kernel = cv2.getStructuringElement(
-
         cv2.MORPH_RECT,
-
         (7,7)
-
     )
 
     edges = cv2.dilate(
-
         edges,
-
         kernel,
-
         iterations=2
-
     )
 
     contours,_ = cv2.findContours(
-
         edges,
-
         cv2.RETR_EXTERNAL,
-
         cv2.CHAIN_APPROX_SIMPLE
-
     )
 
     candidates=[]
@@ -72,7 +54,7 @@ def find_candidates(gray):
 
         ratio=h/w
 
-        # tabel BPOM biasanya lebih lebar dari tinggi (ratio bisa ~0.3)
+        # tabel BPOM 
         if ratio<0.25:
             continue
 
@@ -88,15 +70,29 @@ def quick_ocr(image):
     config="--oem 3 --psm 6"
 
     return pytesseract.image_to_string(
-
         image,
-
         lang="ind+eng",
-
         config=config
-
     ).lower()
-    
+
+# Lebar maksimum crop kandidat 
+SCORING_MAX_WIDTH = 1500
+
+def resize_for_scoring(crop):
+
+    h, w = crop.shape[:2]
+
+    if w <= SCORING_MAX_WIDTH:
+        return crop
+
+    ratio = SCORING_MAX_WIDTH / w
+
+    return cv2.resize(
+        crop,
+        (SCORING_MAX_WIDTH, int(h * ratio)),
+        interpolation=cv2.INTER_AREA
+    )
+
 def score_text(text):
 
     score=0
@@ -116,11 +112,8 @@ MIN_TABLE_SCORE = 1
 def detect_table(image):
 
     gray=cv2.cvtColor(
-
         image,
-
         cv2.COLOR_BGR2GRAY
-
     )
 
     candidates=find_candidates(gray)
@@ -138,7 +131,10 @@ def detect_table(image):
             x:x+w
         ]
 
-        text=quick_ocr(crop)
+        # hanya untuk cek kata kunci crop asli
+        scoring_crop = resize_for_scoring(crop)
+
+        text=quick_ocr(scoring_crop)
 
         score=score_text(text)
 
@@ -147,17 +143,16 @@ def detect_table(image):
     relevant = [c for c in scored if c[0] >= MIN_TABLE_SCORE]
 
     if not relevant:
-        # tidak ada kata kunci gizi kebaca - lebih aman pakai foto utuh
+        
         return image
 
-    # gabung semua kandidat relevan jadi satu crop - label BPOM sering
-    # memisah "Energi Total" dan tabel Lemak/Protein/dst jadi 2 kotak
+    # gabungan semua kandidat relevan jadi satu crop 
     x1 = min(c[1] for c in relevant)
     y1 = min(c[2] for c in relevant)
     x2 = max(c[1] + c[3] for c in relevant)
     y2 = max(c[2] + c[4] for c in relevant)
 
-    # Beri sedikit padding supaya teks di tepi kotak tidak terpotong
+    # sedikit padding supaya teks di tepi kotak tidak terpotong
     height, width = gray.shape[:2]
 
     pad_x = int((x2 - x1) * 0.03)
@@ -173,20 +168,14 @@ def detect_table(image):
 def save_crop(crop,path):
 
     cv2.imwrite(
-
         path,
-
         crop
-
     )
 
 
 def detect_nutrition_table(
-
     image_path,
-
     output_folder
-
 ):
 
     image=cv2.imread(image_path)
@@ -194,27 +183,21 @@ def detect_nutrition_table(
     crop=detect_table(image)
 
     os.makedirs(
-
         output_folder,
-
         exist_ok=True
-
     )
 
+    # nama file crop mengikuti nama file original
+    base_filename = os.path.basename(image_path)
+
     path=os.path.join(
-
         output_folder,
-
-        "nutrition_crop.jpg"
-
+        f"crop_{base_filename}"
     )
 
     save_crop(
-
         crop,
-
         path
-
     )
 
     return path

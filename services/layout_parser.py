@@ -3,27 +3,15 @@ import math
 
 from rapidfuzz import fuzz
 
-# Parser posisi kata: terima ocr_result["words"] (list dict
-# text/left/top/width/height/conf), kembalikan dict per field
-# {value, unit, unit_valid} - lihat parse_document() di akhir file.
-
+# Parser posisi kata
 ROW_THRESHOLD = 18
-
 COLUMN_THRESHOLD = 120
-
 RIGHT_LIMIT = 260
-
 BOTTOM_LIMIT = 70
-
 FUZZY_THRESHOLD = 75
 
-
-
-# substitusi huruf->angka (o/l/i/s ke 0/1/1/5), tapi HANYA untuk
-# token yang didominasi angka (mis. "l0"->"10") - jangan diterapkan
-# ke kata label biasa ("Protein" dst), lihat clean_text() di bawah
+# substitusi huruf ke angka 
 OCR_FIX = {
-
     "O": "0",
     "o": "0",
 
@@ -32,244 +20,150 @@ OCR_FIX = {
     "|": "1",
 
     "S": "5",
-
 }
-
-
 
 # FIELD ALIAS
-
 FIELDS = {
-
     "energi":[
-
         "energi",
-
         "energi total",
-
         "energy",
-
         "total energy",
-
         "total energi"
-
     ],
 
     "protein":[
-
         "protein"
-
     ],
 
     "lemak_total":[
-
         "lemak total",
-
         "total lemak",
-
         "total fat"
-
     ],
 
     "lemak_jenuh":[
-
         "lemak jenuh",
-
         "saturated fat"
-
     ],
 
     "lemak_trans":[
-
         "lemak trans",
-
         "trans fat"
-
     ],
 
     "kolesterol":[
-
         "kolesterol",
-
         "cholesterol"
-
     ],
 
     "karbohidrat_total":[
-
         "karbohidrat total",
-
         "karbohidrat",
-
         "total carbohydrate",
-
         "total karbohidrat"
-
     ],
 
     "serat":[
-
         "serat",
-
         "serat pangan",
-
         "dietary fiber",
-
         "fiber"
-
     ],
 
     "gula_total":[
-
         "gula",
-
         "gula total",
-
         "total sugars",
-
         "sugars"
-
     ],
 
     "sukrosa":[
-
         "sukrosa",
-
         "sucrose"
-
     ],
 
     "natrium":[
-
         "natrium",
-
         "sodium",
-
         "garam"
-
     ],
 
     "takaran_saji":[
-
         "takaran saji",
-
         "serving size"
-
     ],
 
     "sajian_per_kemasan":[
-
         "sajian per kemasan",
-
         "servings per container"
-
     ]
-
 }
-
-
 
 # VALID UNIT
-
 VALID_UNITS = {
-
     "energi":[
-
         "kkal",
-
         "kcal",
-
         "kal"
-
     ],
 
     "protein":[
-
         "g"
-
     ],
 
     "lemak_total":[
-
         "g"
-
     ],
 
     "lemak_jenuh":[
-
         "g"
-
     ],
 
     "lemak_trans":[
-
         "g"
-
     ],
 
     "kolesterol":[
-
         "mg"
-
     ],
 
     "karbohidrat_total":[
-
         "g"
-
     ],
 
     "serat":[
-
         "g"
-
     ],
 
     "gula_total":[
-
         "g"
-
     ],
 
     "sukrosa":[
-
         "g"
-
     ],
 
     "natrium":[
-
         "mg"
-
     ],
 
     "takaran_saji":[
-
         "g",
-
         "ml"
-
     ],
 
     "sajian_per_kemasan":[
-
         "porsi",
-
         "serving"
-
     ]
-
 }
 
-
-
 # CLEAN OCR
-
 def clean_text(text):
-
     lowered = text.strip().lower()
 
-    # koma desimal aman diterapkan ke teks apapun ("10,85" -> "10.85")
+    # koma desimal aman diterapkan ke teks apapun
     lowered = lowered.replace(",", ".")
 
     substituted = lowered
@@ -280,18 +174,14 @@ def clean_text(text):
 
     digit_count = sum(ch.isdigit() for ch in substituted)
 
-    # pakai versi substitusi cuma kalau token didominasi angka,
-    # supaya kata label ("protein", "sodium") tidak ikut rusak
+    # pakai versi substitusi cuma kalau token didominasi angka
     if digit_count > 0 and digit_count >= len(substituted) - 1:
 
         return substituted
 
     return lowered
 
-
-
 # NORMALIZE WORD
-
 def normalize_word(word):
 
     word["text"] = clean_text(
@@ -302,10 +192,7 @@ def normalize_word(word):
 
     return word
 
-
-
 # NORMALIZE OCR
-
 def normalize_words(words):
 
     result = []
@@ -323,10 +210,7 @@ def normalize_words(words):
 
     return result
 
-
-
 # BUILD ROWS
-
 def build_rows(words):
 
     rows = []
@@ -401,10 +285,7 @@ def build_rows(words):
 
     return rows
 
-
-
 # SORT ROWS
-
 def sort_rows(rows):
 
     for row in rows:
@@ -419,10 +300,7 @@ def sort_rows(rows):
 
     return rows
 
-
-
 # ROW TO TEXT
-
 def row_to_text(row):
 
     return " ".join(
@@ -433,10 +311,7 @@ def row_to_text(row):
 
     )
 
-
-
 # MERGE ROW
-
 def merge_rows(rows):
 
     merged = []
@@ -456,7 +331,6 @@ def merge_rows(rows):
     return merged
 
 # FIND BEST KEYWORD IN ROW
-
 def find_row_keyword(row_text, aliases):
 
     best_score = 0
@@ -481,9 +355,7 @@ def find_row_keyword(row_text, aliases):
 
     return best_alias, best_score
 
-
 # FIND ROW BY FIELD
-
 def find_field_row(rows, aliases):
 
     best = None
@@ -510,9 +382,7 @@ def find_field_row(rows, aliases):
 
     return best
 
-
 # SEARCH WORDS RIGHT
-
 def search_right(row, keyword_left=0):
 
     result = []
@@ -533,9 +403,7 @@ def search_right(row, keyword_left=0):
 
     )
 
-
 # SEARCH NEXT ROW
-
 def search_next_rows(rows, current_top):
 
     result = []
@@ -564,7 +432,6 @@ def search_next_rows(rows, current_top):
 
 
 # FIND KEYWORD POSITION
-
 def keyword_position(row, aliases):
 
     best = None
@@ -595,17 +462,13 @@ def keyword_position(row, aliases):
 
     return best
 
-
 # OCR NUMBER FIX
-
 def normalize_number(text):
-
-    # pakai clean_text() yang sudah aman, jangan substitusi ulang di sini
+    
     return clean_text(text)
 
 
 # EXTRACT NUMBER
-
 NUMBER_PATTERN = re.compile(
 
     r"\d+(?:\.\d+)?"
@@ -647,7 +510,6 @@ def extract_number(words):
 
 
 # UNIT PATTERN
-
 UNIT_PATTERN = re.compile(
 
     r"(kkal|kcal|kal|mg|mcg|µg|ug|g|gram|ml|%)",
@@ -658,7 +520,6 @@ UNIT_PATTERN = re.compile(
 
 
 # EXTRACT UNIT
-
 def extract_unit(words):
 
     for word in words:
@@ -679,7 +540,6 @@ def extract_unit(words):
 
 
 # AUTO UNIT
-
 def infer_unit(field):
 
     if field == "energi":
@@ -706,7 +566,6 @@ def infer_unit(field):
 
 
 # UNIT VALIDATION
-
 def validate_unit(field, unit):
 
     valid = VALID_UNITS.get(
@@ -721,7 +580,6 @@ def validate_unit(field, unit):
 
 
 # CONFIDENCE
-
 def candidate_confidence(
 
     keyword_score,
@@ -754,7 +612,6 @@ def candidate_confidence(
 
 
 # BUILD CANDIDATE
-
 def build_candidate(
 
     field,
@@ -819,7 +676,7 @@ def parse_field(field_name, rows, aliases):
 
     candidates = []
 
-    # strategi 1: cari di sebelah kanan keyword (layout linear)
+    # strategi mencari di sebelah kanan keyword (layout linear)
     right_words = search_right(row, kw_left)
     if right_words:
         val = extract_number(right_words)
@@ -829,7 +686,7 @@ def parse_field(field_name, rows, aliases):
             c_right = build_candidate(field_name, val, unit, keyword_score)
             candidates.append(c_right)
 
-        # token gabungan angka+satuan menyatu, mis. "67g"
+        # token gabungan angka+satuan menyatu
         for w in right_words:
             w_text = clean_text(w["text"])
             num_match = NUMBER_PATTERN.search(normalize_number(w["text"]))
@@ -845,7 +702,7 @@ def parse_field(field_name, rows, aliases):
                 except ValueError:
                     pass
 
-    # strategi 2: cari di baris bawahnya (layout tabel), maks 3 baris terdekat
+    # strategi mencari di baris bawahnya (layout tabel), maks 3 baris terdekat
     next_rows = search_next_rows(rows, row["top"])
 
     for next_r in next_rows[:3]:
@@ -863,14 +720,13 @@ def parse_field(field_name, rows, aliases):
 
     return max(candidates, key=lambda x: x["confidence"])
 
-
 def parse_document(ocr_words, field_config=FIELDS, debug=False):
     """Proses seluruh token OCR jadi dict nutrisi terstruktur per field."""
 
     words = normalize_words(ocr_words)
     rows = build_rows(words)
     rows = sort_rows(rows)
-    rows = merge_rows(rows)  # menambahkan key "text" ke tiap row
+    rows = merge_rows(rows)  # menambahkan key teks ke tiap row
 
     if debug:
         print(f"[DEBUG] Berhasil membangun {len(rows)} baris dari {len(ocr_words)} token OCR.")
@@ -886,4 +742,3 @@ def parse_document(ocr_words, field_config=FIELDS, debug=False):
             print(f"[DEBUG] {field_name.upper():<20} | Status: {status:<6} | Value: {str(parsed['value']):<6} | Unit: {parsed['unit']:<4} | Conf: {parsed['confidence']}%")
 
     return result
-

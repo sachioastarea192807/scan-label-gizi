@@ -6,22 +6,17 @@ load_dotenv()  # baca .env kalau ada; kalau tidak ada, pakai default di bawah
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-
 def _str_to_bool(value):
 
     return str(value).strip().lower() in ("1", "true", "yes", "on")
 
-
 class Config:
 
-    # Fallback ini cuma jaring pengaman kalau .env tidak ada -
-    # jangan diandalkan, selalu isi SECRET_KEY di .env
     SECRET_KEY = os.environ.get(
         "SECRET_KEY",
         "ganti_dengan_secret_key"
     )
 
-    # Diset lewat FLASK_DEBUG di .env
     DEBUG = _str_to_bool(os.environ.get("FLASK_DEBUG", "False"))
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(
@@ -33,9 +28,9 @@ class Config:
 
     UPLOAD_FOLDER="static/uploads"
 
-    # Cuma dipakai kalau file ini benar-benar ada (dicek di
-    # services/ocr_engine.py). Kosongkan/abaikan kalau Tesseract
-    # sudah ada di PATH sistem.
+    # batas ukuran file upload 10MB
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024
+
     TESSERACT_CMD = r"C:\Users\Angelia Salsabila\tesseract_ocr\tesseract.exe"
     
     ORIGINAL_FOLDER = os.path.join(

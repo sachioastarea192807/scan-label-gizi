@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import render_template
+from flask import flash
 
 from flask_login import login_required
 from flask_login import current_user
@@ -22,60 +23,75 @@ dashboard = Blueprint(
 @login_required
 def index():
 
-    total_scan = ScanHistory.query.filter_by(
-        user_id=current_user.id
-    ).count()
+    try:
 
-    nutrition = db.session.query(
+        total_scan = ScanHistory.query.filter_by(
+            user_id=current_user.id
+        ).count()
 
-        func.sum(NutritionResult.energi),
+        nutrition = db.session.query(
 
-        func.sum(NutritionResult.protein),
+            func.sum(NutritionResult.energi),
 
-        func.sum(NutritionResult.lemak_total),
+            func.sum(NutritionResult.protein),
 
-        func.sum(NutritionResult.karbohidrat_total),
+            func.sum(NutritionResult.lemak_total),
 
-        func.sum(NutritionResult.gula_total),
+            func.sum(NutritionResult.karbohidrat_total),
 
-        func.sum(NutritionResult.natrium)
+            func.sum(NutritionResult.gula_total),
 
-    ).join(
+            func.sum(NutritionResult.natrium)
 
-        ScanHistory,
+        ).join(
 
-        NutritionResult.scan_id == ScanHistory.id
+            ScanHistory,
 
-    ).filter(
+            NutritionResult.scan_id == ScanHistory.id
 
-        ScanHistory.user_id == current_user.id
+        ).filter(
 
-    ).filter(
+            ScanHistory.user_id == current_user.id
 
-        func.date(
-            ScanHistory.created_at
-        ) == func.current_date()
+        ).filter(
 
-    ).first()
+            func.date(
+                ScanHistory.created_at
+            ) == func.current_date()
 
-    if nutrition is None:
+        ).first()
 
+        if nutrition is None:
+
+            nutrition = (0, 0, 0, 0, 0, 0)
+
+        nutrition = tuple(
+            x if x is not None else 0
+            for x in nutrition
+        )
+
+        latest = ScanHistory.query.filter_by(
+
+            user_id=current_user.id
+
+        ).order_by(
+
+            ScanHistory.created_at.desc()
+
+        ).limit(5).all()
+
+    except Exception as e:
+
+        print(f"[ERROR] Gagal memuat dashboard untuk user {current_user.id}: {e}")
+
+        flash(
+            "Terjadi kendala saat memuat data dashboard.",
+            "danger"
+        )
+
+        total_scan = 0
         nutrition = (0, 0, 0, 0, 0, 0)
-
-    nutrition = tuple(
-        x if x is not None else 0
-        for x in nutrition
-    )
-
-    latest = ScanHistory.query.filter_by(
-
-        user_id=current_user.id
-
-    ).order_by(
-
-        ScanHistory.created_at.desc()
-
-    ).limit(5).all()
+        latest = []
 
     return render_template(
 

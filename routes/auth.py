@@ -32,14 +32,42 @@ def register():
 
     if request.method == "POST":
 
-        nama = request.form["nama"]
+        nama = request.form.get("nama", "").strip()
 
-        email = request.form["email"]
+        email = request.form.get("email", "").strip()
 
-        password = request.form["password"]
+        password = request.form.get("password", "")
+
+        if not nama or not email or not password:
+
+            flash(
+                "Semua kolom wajib diisi.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.register")
+            )
 
         # Cek email
-        if User.query.filter_by(email=email).first():
+        try:
+
+            email_sudah_ada = User.query.filter_by(email=email).first()
+
+        except Exception as e:
+
+            print(f"[ERROR] Gagal query database saat cek email registrasi: {e}")
+
+            flash(
+                "Terjadi kendala pada server. Silakan coba lagi beberapa saat lagi.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.register")
+            )
+
+        if email_sudah_ada:
 
             flash(
                 "Email sudah digunakan.",
@@ -50,21 +78,38 @@ def register():
                 url_for("auth.register")
             )
 
-        # Buat user baru
-        user = User(
+        try:
 
-            nama=nama,
+            # Buat user baru
+            user = User(
 
-            email=email
+                nama=nama,
 
-        )
+                email=email
 
-        # Hash password
-        user.set_password(password)
+            )
 
-        db.session.add(user)
+            # Hash password
+            user.set_password(password)
 
-        db.session.commit()
+            db.session.add(user)
+
+            db.session.commit()
+
+        except Exception as e:
+
+            print(f"[ERROR] Gagal registrasi user {email}: {e}")
+
+            db.session.rollback()
+
+            flash(
+                "Terjadi kendala saat mendaftar. Silakan coba lagi.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.register")
+            )
 
         flash(
             "Register berhasil. Silakan login.",
@@ -87,33 +132,65 @@ def login():
 
     if request.method == "POST":
 
-        email = request.form["email"]
+        email = request.form.get("email", "").strip()
 
-        password = request.form["password"]
+        password = request.form.get("password", "")
 
-        user = User.query.filter_by(
-            email=email
-        ).first()
+        try:
+
+            user = User.query.filter_by(
+                email=email
+            ).first()
+
+        except Exception as e:
+
+            print(f"[ERROR] Gagal query database saat login: {e}")
+
+            flash(
+                "Terjadi kendala pada server. Silakan coba lagi beberapa saat lagi.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("auth.login")
+            )
 
         if user and user.check_password(password):
 
             login_user(user)
 
-            # auto-save hasil scan tamu yang tertunda (lihat routes/history.py:save_result)
+            # auto-save hasil scan tamu yang tertunda
             pending_scan = session.pop("pending_scan", None)
 
             if pending_scan:
 
-                save_scan(pending_scan, user.id)
+                try:
 
-                flash(
-                    "Login berhasil. Hasil scan Anda otomatis tersimpan ke riwayat.",
-                    "success"
-                )
+                    save_scan(pending_scan, user.id)
 
-                return redirect(
-                    url_for("history.index")
-                )
+                    flash(
+                        "Login berhasil. Hasil scan Anda otomatis tersimpan ke riwayat.",
+                        "success"
+                    )
+
+                    return redirect(
+                        url_for("history.index")
+                    )
+
+                except Exception as e:
+
+                    print(f"[ERROR] Gagal auto-save pending_scan untuk user {user.id}: {e}")
+
+                    db.session.rollback()
+
+                    flash(
+                        "Login berhasil, tapi hasil scan sebelumnya gagal disimpan otomatis. Silakan scan ulang.",
+                        "warning"
+                    )
+
+                    return redirect(
+                        url_for("dashboard.index")
+                    )
 
             flash(
                 "Login berhasil.",

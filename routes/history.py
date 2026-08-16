@@ -15,12 +15,10 @@ from database import db
 from models.scan_history import ScanHistory
 from models.nutrition_result import NutritionResult
 
-
 history = Blueprint(
     "history",
     __name__
 )
-
 
 NUTRITION_NUMERIC_FIELDS = [
     "energi",
@@ -36,9 +34,7 @@ NUTRITION_NUMERIC_FIELDS = [
     "natrium"
 ]
 
-
 # HALAMAN RIWAYAT
-
 @history.route("/history")
 @login_required
 def index():
@@ -81,9 +77,7 @@ def index():
         meal_type=meal_type
     )
 
-
 # DETAIL RIWAYAT
-
 @history.route("/history/<int:history_id>")
 @login_required
 def detail(history_id):
@@ -101,9 +95,7 @@ def detail(history_id):
         item=item
     )
 
-
 # HAPUS RIWAYAT
-
 @history.route("/history/delete/<int:history_id>", methods=["POST"])
 @login_required
 def delete(history_id):
@@ -128,10 +120,7 @@ def delete(history_id):
         url_for("history.index")
     )
 
-
-# BANGUN DATA DARI FORM (dipakai oleh /save-result dan
-# oleh auto-save setelah login)
-
+# BANGUN DATA DARI FORM 
 def build_scan_payload(form):
 
     payload = {
@@ -162,10 +151,7 @@ def build_scan_payload(form):
 
     return payload
 
-
-# SIMPAN KE DATABASE (dipakai baik saat user sudah login
-# maupun saat auto-save setelah login dari sesi tersimpan)
-
+# SIMPAN KE DATABASE
 def save_scan(payload, user_id):
 
     scan = ScanHistory(
@@ -210,17 +196,47 @@ def save_scan(payload, user_id):
 
     return scan
 
-
-# simpan hasil scan; kalau belum login, ditunda dulu di session
-# lalu diarahkan ke login (lihat routes/auth.py:login)
+# simpan hasil scan. kalau belum login, ditunda dulu di session lalu diarahkan ke login
 @history.route("/save-result", methods=["POST"])
 def save_result():
 
-    payload = build_scan_payload(request.form)
+    try:
+
+        payload = build_scan_payload(request.form)
+
+    except (TypeError, ValueError) as e:
+
+        print(f"[ERROR] Gagal membaca data hasil scan: {e}")
+
+        flash(
+            "Data hasil scan tidak valid. Silakan periksa kembali nilai yang diisi.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("ocr.upload_page")
+        )
 
     if current_user.is_authenticated:
 
-        save_scan(payload, current_user.id)
+        try:
+
+            save_scan(payload, current_user.id)
+
+        except Exception as e:
+
+            print(f"[ERROR] Gagal menyimpan riwayat untuk user {current_user.id}: {e}")
+
+            db.session.rollback()
+
+            flash(
+                "Terjadi kendala saat menyimpan riwayat. Silakan coba lagi.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("ocr.upload_page")
+            )
 
         flash(
             "Riwayat berhasil disimpan.",
@@ -231,7 +247,7 @@ def save_result():
             url_for("history.index")
         )
 
-    # Belum login -> simpan sementara di session
+    # Belum login akan simpan sementara di session
     session["pending_scan"] = payload
 
     flash(

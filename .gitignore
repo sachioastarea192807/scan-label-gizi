@@ -1,5 +1,5 @@
 # ==========================================================
-# Rahasia & konfigurasi lokal - JANGAN pernah di-commit
+# Rahasia & konfigurasi lokal 
 # ==========================================================
 .env
 *.env
@@ -15,7 +15,7 @@ env/
 .venv/
 
 # ==========================================================
-# Database lokal (kalau pakai SQLite)
+# Database lokal 
 # ==========================================================
 *.db
 *.sqlite
@@ -23,9 +23,6 @@ env/
 
 # ==========================================================
 # File upload milik user (foto scan, foto profil, dsb.)
-# Ini data hasil pemakaian aplikasi, bukan source code - tidak
-# perlu ikut di-commit. Folder-nya sendiri tetap dipertahankan
-# lewat .gitkeep supaya tidak error saat pertama kali clone.
 # ==========================================================
 static/uploads/original/*
 static/uploads/preprocess/*
@@ -45,6 +42,6 @@ static/uploads/profile/*
 Thumbs.db
 
 # ==========================================================
-# Folder testing/eksperimen - hasil uji coba, tidak perlu di-commit
+# Folder testing/eksperimen 
 # ==========================================================
 testing/

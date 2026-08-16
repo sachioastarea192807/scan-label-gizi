@@ -1,6 +1,7 @@
 import os
 import cv2
 import pytesseract
+import concurrent.futures
 
 from pytesseract import Output
 from config import Config
@@ -17,6 +18,9 @@ BASE_CONFIG = (
 )
 
 PSM_LIST = [6, 4, 11]
+
+# panggilan pytesseract di proses subprocess terpisah 
+MAX_WORKERS = min(8, (os.cpu_count() or 4) * 2)
 
 def load_image(path):
     image = cv2.imread(path)
@@ -63,9 +67,6 @@ def run_ocr(image, psm):
 
         confidence.append(conf)
 
-        # Kelompokkan kata per baris (pakai info yang sudah ada dari
-        # image_to_data, tanpa perlu OCR ulang gambar yang sama lewat
-        # image_to_string terpisah).
         line_key = (
             data["block_num"][i],
             data["par_num"][i],
@@ -88,17 +89,6 @@ def run_ocr(image, psm):
         "psm": psm
     }
 
-def process_variant(image):
-    candidates = []
-    for psm in PSM_LIST:
-        try:
-            result = run_ocr(image, psm)
-            candidates.append(result)
-        except:
-            pass
-
-    return candidates
-
 def score(candidate):
     score = 0
     score += candidate["confidence"] * 0.7
@@ -117,22 +107,24 @@ def choose_best(candidates):
     return candidates[0]
 
 def read_document(images):
-    """
-    images adalah dict hasil preprocess.py
-    {
-        gray:...,
-        clahe:...,
-        shadow:...,
-        adaptive:...,
-        otsu:...
-    }
-    """
-    all_candidates = []
     
-    for _, path in images.items():
-        image = load_image(path)
-        result = process_variant(image)
-        all_candidates.extend(result)
+    loaded = [load_image(path) for path in images.values()]
+
+    all_candidates = []
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = [
+            executor.submit(run_ocr, image, psm)
+            for image in loaded
+            for psm in PSM_LIST
+        ]
+
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                all_candidates.append(future.result())
+            except Exception:
+                pass
+
     best = choose_best(all_candidates)
 
     return best

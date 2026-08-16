@@ -43,3 +43,8 @@ static/uploads/profile/*
 .idea/
 .DS_Store
 Thumbs.db
+
+# ==========================================================
+# Folder testing/eksperimen - hasil uji coba, tidak perlu di-commit
+# ==========================================================
+testing/

@@ -17,10 +17,8 @@ BASE_CONFIG = (
     "-c preserve_interword_spaces=1"
 )
 
-PSM_LIST = [6, 4, 11]
-
-# panggilan pytesseract di proses subprocess terpisah 
-MAX_WORKERS = min(8, (os.cpu_count() or 4) * 2)
+PSM_LIST = [int(p) for p in os.environ.get("OCR_PSM_LIST", "6").split(",")]
+MAX_WORKERS = int(os.environ.get("OCR_MAX_WORKERS", "2"))
 
 def load_image(path):
     image = cv2.imread(path)

@@ -1,17 +1,11 @@
 import os
 
-from dotenv import load_dotenv
-
-load_dotenv()  # baca .env kalau ada; kalau tidak ada, pakai default di bawah
-
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _str_to_bool(value):
-
     return str(value).strip().lower() in ("1", "true", "yes", "on")
 
 class Config:
-
     SECRET_KEY = os.environ.get(
         "SECRET_KEY",
         "ganti_dengan_secret_key"
@@ -21,18 +15,20 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
-        "sqlite:///ocr"
+        "sqlite:///ocr.db"
     )
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
-
-    UPLOAD_FOLDER="static/uploads"
+    UPLOAD_FOLDER = "static/uploads"
 
     # batas ukuran file upload 10MB
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024
 
-    TESSERACT_CMD = r"C:\Users\Angelia Salsabila\tesseract_ocr\tesseract.exe"
-    
+    TESSERACT_CMD = os.environ.get(
+        "TESSERACT_CMD",
+        "/usr/bin/tesseract"
+    )
+
     ORIGINAL_FOLDER = os.path.join(
         BASE_DIR,
         "static",

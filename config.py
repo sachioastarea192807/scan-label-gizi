@@ -21,7 +21,7 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
-        "mysql+pymysql://root:@localhost/ocr"
+        "sqlite:///ocr"
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS=False

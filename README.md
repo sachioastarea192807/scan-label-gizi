@@ -1,0 +1,1 @@
+Scan Label Gizi merupakan website yang membantu pengguna untuk membaca informasi nilai gizi pada kemasan makanan/minuman dengan menggunakan teknologi Optical Character Recognition (OCR). Hasil pembacaan akan diproses, dinormalisasi, dan divalidasi. Kemudian hasil dapat disimpan untuk monitoring konsumsi harian.

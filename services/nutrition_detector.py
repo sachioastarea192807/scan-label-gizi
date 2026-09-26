@@ -63,7 +63,10 @@ def find_candidates(gray):
 
         candidates.append((x,y,w,h))
 
-    return candidates
+    # urutkan dari area terbesar, ambil maksimal 5 biar nggak berat
+    candidates.sort(key=lambda c: c[2]*c[3], reverse=True)
+    return candidates[:5]
+
 
 def quick_ocr(image):
 
@@ -179,6 +182,16 @@ def detect_nutrition_table(
 ):
 
     image=cv2.imread(image_path)
+
+    # resize dulu biar proses deteksi kontur & OCR nggak berat
+    h, w = image.shape[:2]
+    if w > 1800:
+        ratio = 1800 / w
+        image = cv2.resize(
+            image,
+            (1800, int(h * ratio)),
+            interpolation=cv2.INTER_AREA
+        )
 
     crop=detect_table(image)
 

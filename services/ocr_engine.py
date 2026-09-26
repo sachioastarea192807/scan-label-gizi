@@ -1,7 +1,6 @@
 import os
 import cv2
 import pytesseract
-import concurrent.futures
 
 from pytesseract import Output
 from config import Config
@@ -13,12 +12,9 @@ if hasattr(Config, "TESSERACT_CMD"):
 LANGUAGE = "ind+eng"
 
 BASE_CONFIG = (
-    "--oem 3 "
+    "--oem 3 --psm 6 "
     "-c preserve_interword_spaces=1"
 )
-
-PSM_LIST = [int(p) for p in os.environ.get("OCR_PSM_LIST", "6").split(",")]
-MAX_WORKERS = int(os.environ.get("OCR_MAX_WORKERS", "2"))
 
 def load_image(path):
     image = cv2.imread(path)
@@ -26,12 +22,11 @@ def load_image(path):
         raise Exception(f"Gagal membaca {path}")
     return image
 
-def run_ocr(image, psm):
-    config = f"{BASE_CONFIG} --psm {psm}"
+def run_ocr(image):
     data = pytesseract.image_to_data(
         image,
         lang=LANGUAGE,
-        config=config,
+        config=BASE_CONFIG,
         output_type=Output.DICT
     )
 
@@ -60,7 +55,6 @@ def run_ocr(image, psm):
             "top": data["top"][i],
             "width": data["width"][i],
             "height": data["height"][i]
-
         })
 
         confidence.append(conf)
@@ -82,47 +76,12 @@ def run_ocr(image, psm):
     return {
         "raw_text": raw,
         "words": words,
-        "confidence": round(avg,2),
-        "word_count": len(words),
-        "psm": psm
+        "confidence": round(avg, 2),
+        "word_count": len(words)
     }
 
-def score(candidate):
-    score = 0
-    score += candidate["confidence"] * 0.7
-    score += candidate["word_count"] * 0.3
-
-    return score
-
-def choose_best(candidates):
-    if len(candidates)==0:
-        return None
-    candidates.sort(
-        key=score,
-        reverse=True
-    )
-
-    return candidates[0]
 
 def read_document(images):
-    
-    loaded = [load_image(path) for path in images.values()]
-
-    all_candidates = []
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [
-            executor.submit(run_ocr, image, psm)
-            for image in loaded
-            for psm in PSM_LIST
-        ]
-
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                all_candidates.append(future.result())
-            except Exception:
-                pass
-
-    best = choose_best(all_candidates)
-
-    return best
+    first_path = next(iter(images.values()))
+    image = load_image(first_path)
+    return run_ocr(image)
